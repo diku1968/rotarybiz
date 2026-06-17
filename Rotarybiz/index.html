@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallcity Rotary Biz Hub - CRM Business Portal</title>
+    <meta name="description" content="A premium, state-of-the-art business networking and lead referral CRM portal for Rotary Club members.">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Auth Wrapper Container (For Login & Register Views) -->
+    <div id="authWrapper" class="auth-container" style="display: none;"></div>
+
+    <!-- Main Application Wrapper (CRM Sidebar Layout) -->
+    <div id="crmMainWrapper" style="display: none;">
+        
+        <!-- CRM Sidebar Menu -->
+        <aside class="crm-sidebar" id="sidebarMenu">
+            <div class="crm-brand flex-column align-items-center text-center py-4 gap-2">
+                <img src="logo.png" alt="Wallcity Rotary Biz Hub Logo" class="brand-logo-img">
+                <div class="developer-credit-text">Developed by PHF Dhiren Pathak</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#/dashboard" class="nav-item-custom">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a href="#/directory" class="nav-item-custom">
+                    <i class="bi bi-people"></i> Member Directory
+                </a>
+                <a href="#/profile" class="nav-item-custom">
+                    <i class="bi bi-building-gear"></i> Business Profile
+                </a>
+                <a href="#/requirements" class="nav-item-custom">
+                    <i class="bi bi-clipboard-data"></i> Requirement Board
+                </a>
+                <a href="#/referrals" class="nav-item-custom">
+                    <i class="bi bi-share"></i> Referral Ledger
+                </a>
+                <a href="#/reports" class="nav-item-custom">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Reports Center
+                </a>
+                <a href="#/admin" class="nav-item-custom" id="adminSidebarLink" style="display: none;">
+                    <i class="bi bi-shield-lock"></i> Admin Console
+                </a>
+                <a href="#/settings" class="nav-item-custom">
+                    <i class="bi bi-sliders"></i> Settings Engine
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" id="logoutButton" class="nav-item-custom text-danger mb-0">
+                    <i class="bi bi-box-arrow-left"></i> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area Wrapper -->
+        <main class="crm-wrapper">
+            
+            <!-- CRM Header -->
+            <header class="crm-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="hamburger-menu" id="hamburgerToggle">
+                        <i class="bi bi-list"></i>
+                    </div>
+                    <h4 class="mb-0 text-white font-heading fw-semibold">Wallcity Rotary Biz Hub</h4>
+                </div>
+                
+                <!-- Active User Details Holder -->
+                <div id="headerUserProfile"></div>
+            </header>
+
+            <!-- ==================================================== -->
+            <!-- VIEW: DASHBOARD PANEL -->
+            <!-- ==================================================== -->
+            <div id="pane-dashboard" class="tab-pane-custom">
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="glass-card text-white">
+                            <div class="stat-icon icon-blue">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <h6 class="text-secondary small mb-1">Rotary Members</h6>
+                            <h3 id="statMembersCount" class="mb-0">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="glass-card text-white">
+                            <div class="stat-icon icon-gold">
+                                <i class="bi bi-clipboard-plus-fill"></i>
+                            </div>
+                            <h6 class="text-secondary small mb-1">Active Requirements</h6>
+                            <h3 id="statRequirementsCount" class="mb-0">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="glass-card text-white">
+                            <div class="stat-icon icon-blue">
+                                <i class="bi bi-share-fill"></i>
+                            </div>
+                            <h6 class="text-secondary small mb-1">Referrals Exchanged</h6>
+                            <h3 id="statReferralsCount" class="mb-0">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="glass-card text-white">
+                            <div class="stat-icon icon-gold">
+                                <i class="bi bi-currency-exchange"></i>
+                            </div>
+                            <h6 class="text-secondary small mb-1">Business Generated</h6>
+                            <h3 id="statBusinessValue" class="mb-0">₹0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Line Trend Chart -->
+                    <div class="col-xl-8">
+                        <div class="glass-card">
+                            <h5 class="text-white mb-4"><i class="bi bi-graph-up text-warning"></i> Business Value Trend (INR)</h5>
+                            <div style="position: relative; height: 320px;">
+                                <canvas id="valueTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Doughnut Category distribution -->
+                    <div class="col-xl-4">
+                        <div class="glass-card">
+                            <h5 class="text-white mb-4"><i class="bi bi-pie-chart text-warning"></i> Member Niches</h5>
+                            <div style="position: relative; height: 320px; display: flex; align-items: center; justify-content: center;">
+                                <canvas id="categoryDistChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Funnel charts -->
+                    <div class="col-xl-6">
+                        <div class="glass-card">
+                            <h5 class="text-white mb-4"><i class="bi bi-funnel text-warning"></i> Referral Funnel Progress</h5>
+                            <div style="position: relative; height: 300px;">
+                                <canvas id="referralFunnelChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Feed -->
+                    <div class="col-xl-6">
+                        <div class="glass-card">
+                            <h5 class="text-white mb-3" id="activityFeedTitle"><i class="bi bi-activity text-warning"></i> Live Hub Activity</h5>
+                            <ul class="list-group list-group-flush" id="dashboardRecentReferrals" style="max-height: 300px; overflow-y: auto;">
+                                <!-- Dyn data -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- VIEW: MEMBER DIRECTORY PANEL -->
+            <!-- ==================================================== -->
+            <div id="pane-directory" class="tab-pane-custom">
+                <div class="glass-card mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Search Members or Keywords</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-search"></i></span>
+                                <input type="text" id="directorySearch" class="form-control" placeholder="Search by name, company, products, services...">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Filter by Business Category</label>
+                            <select id="directoryCategoryFilter" class="form-select">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="directoryMembersList">
+                    <!-- Dyn cards -->
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- VIEW: BUSINESS PROFILE PANEL -->
+            <!-- ==================================================== -->
+            <div id="pane-profile" class="tab-pane-custom">
+                <form id="businessProfileForm">
+                    <div class="row g-4">
+                        <!-- Left Details Card -->
+                        <div class="col-lg-8">
+                            <div class="glass-card">
+                                <h5 class="text-white mb-4"><i class="bi bi-building-gear text-warning"></i> Company Credentials & Profile</h5>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-secondary small">Full Name</label>
+                                        <input type="text" id="profileName" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-secondary small">Email Address (Read-only)</label>
+                                        <input type="email" id="profileEmail" class="form-control" readonly disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-secondary small">WhatsApp Mobile No</label>
+                                        <input type="tel" id="profileMobile" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-secondary small">Niche Category</label>
+                                        <select class="form-select" id="profileCategory" required>
+                                            <option value="" disabled selected>Loading categories...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label text-secondary small">Company Name</label>
+                                        <input type="text" id="profileCompany" class="form-control" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label text-secondary small">Business Description</label>
+                                        <textarea id="profileDescription" class="form-control" rows="4" placeholder="Brief elevator pitch about what your business does..."></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label text-secondary small">Office Address</label>
+                                        <input type="text" id="profileAddress" class="form-control" placeholder="101, Business Center, Main Road">
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 pt-3 border-top border-secondary">
+                                    <button type="submit" class="btn btn-accent px-4 py-2">
+                                        <i class="bi bi-save"></i> Save Profile Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Assets Card -->
+                        <div class="col-lg-4">
+                            <div class="glass-card mb-4">
+                                <h5 class="text-white mb-3">Corporate Logo</h5>
+                                <div class="d-flex flex-column align-items-center text-center gap-3">
+                                    <div class="profile-logo-wrap" style="width: 120px; height: 120px;">
+                                        <img id="profileLogoPreview" src="https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=150&auto=format&fit=crop&q=60" alt="Logo">
+                                    </div>
+                                    <div class="w-100">
+                                        <label class="form-label text-secondary small">Upload New Logo (JPG / PNG)</label>
+                                        <input type="file" id="profileLogoInput" class="form-control form-control-sm" accept="image/*">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Products & Services tags -->
+                            <div class="glass-card">
+                                <h5 class="text-white mb-3">Products & Services</h5>
+                                
+                                <!-- Products segment -->
+                                <div class="mb-4">
+                                    <label class="form-label text-secondary small d-block">My Products</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" id="prodInput" class="form-control form-control-sm" placeholder="e.g. CRM Software">
+                                        <button class="btn btn-primary btn-sm" type="button" id="addProdBtn">+</button>
+                                    </div>
+                                    <div id="profileProductsList"></div>
+                                </div>
+
+                                <!-- Services segment -->
+                                <div>
+                                    <label class="form-label text-secondary small d-block">My Services</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" id="servInput" class="form-control form-control-sm" placeholder="e.g. Cloud Hosting">
+                                        <button class="btn btn-primary btn-sm" type="button" id="addServBtn">+</button>
+                                    </div>
+                                    <div id="profileServicesList"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- VIEW: REQUIREMENT BOARD PANEL -->
+            <!-- ==================================================== -->
+            <div id="pane-requirements" class="tab-pane-custom">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-white mb-0 font-heading">Business Requirement Board</h4>
+                    <button class="btn btn-accent" data-bs-toggle="modal" data-bs-target="#createRequirementModal">
+                        <i class="bi bi-plus-lg"></i> Post Requirement
+                    </button>
+                </div>
+
+                <div class="row" id="requirementsBoardGrid">
+                    <!-- Dyn list -->
+                </div>
+
+                <!-- My Submitted Bids/Quotes Section -->
+                <div class="glass-card mt-5">
+                    <h5 class="text-white mb-3"><i class="bi bi-send-check text-warning"></i> My Submitted Quotations</h5>
+                    <p class="text-secondary small mb-3">Track all quotes you have sent to other members' requirements and check their approval status.</p>
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Requirement</th>
+                                    <th>Buyer Company</th>
+                                    <th>Quoted Price</th>
+                                    <th>Delivery Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myQuotesTableBody">
+                                <!-- Dynamic rows of sent quotes -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- VIEW: REFERRAL LEDGER PANEL -->
+            <!-- ==================================================== -->
+            <div id="pane-referrals" class="tab-pane-custom">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-white mb-0 font-heading">Business Referral Tracker</h4>
+                    <button class="btn btn-accent" data-bs-toggle="modal" data-bs-target="#createReferralModal">
+                        <i class="bi bi-send"></i> Send Referral
+                    </button>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="glass-card">
+                            <h5 class="text-white mb-3"><i class="bi bi-arrow-down-left-circle text-info"></i> Referrals Received</h5>
+                            <div id="referralsReceivedGrid" style="max-height: 600px; overflow-y: auto; padding-right: 5px;">
+                                <!-- dynamic received referrals -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="glass-card">
+                            <h5 class="text-white mb-3"><i class="bi bi-arrow-up-right-circle text-warning"></i> Referrals Given</h5>
+                            <div id="referralsGivenGrid" style="max-height: 600px; overflow-y: auto; padding-right: 5px;">
+                                <!-- dynamic given referrals -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- VIEW: REPORTS PANEL -->
+            <!-- ==================================================== -->
+            <div id="pane-reports" class="tab-pane-custom">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="glass-card text-center">
+                            <div class="stat-icon icon-blue mx-auto">
+                                <i class="bi bi-file-earmark-excel"></i>
+                            </div>
+                            <h5 class="text-white mt-3 mb-2">Export Directory</h5>
+                            <p class="text-secondary small mb-4">Download Excel sheet containing all active members, their contact numbers, niches, and registered products.</p>
+                            <button id="btnExportDirectoryExcel" class="btn btn-primary w-100">
+                                <i class="bi bi-download"></i> Download Directory XLSX
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="glass-card text-center">
+                            <div class="stat-icon icon-blue mx-auto">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+                            </div>
+                            <h5 class="text-white mt-3 mb-2">Export Referrals Ledger</h5>
+                            <p class="text-secondary small mb-4">Download spreadsheet ledger of all given/received referrals, including tracking statuses and business values.</p>
+                            <button id="btnExportReferralsExcel" class="btn btn-primary w-100">
+                                <i class="bi bi-download"></i> Download Referrals XLSX
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="glass-card text-center">
+                            <div class="stat-icon icon-gold mx-auto">
+                                <i class="bi bi-file-pdf"></i>
+                            </div>
+                            <h5 class="text-white mt-3 mb-2">Export Analytics Report</h5>
+                            <p class="text-secondary small mb-4">Download detailed PDF progress report including transaction funnel volumes, categories distribution, and generated value.</p>
+                            <button id="btnExportPDFReport" class="btn btn-accent w-100">
+                                <i class="bi bi-filetype-pdf"></i> Generate PDF Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card mt-4">
+                    <h5 class="text-white mb-3"><i class="bi bi-info-circle text-warning"></i> Report Statistics Context</h5>
+                    <div class="row g-3 text-white">
+                        <div class="col-md-4">
+                            <div class="p-3 rounded bg-dark border border-secondary">
+                                <small class="text-secondary d-block">Log Volume:</small>
+                                <span id="repTotalReferrals" class="fs-4 fw-semibold">0</span> Referrals Exchanged
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded bg-dark border border-secondary">
+                                <small class="text-secondary d-block">Networking Size:</small>
+                                <span id="repTotalMembers" class="fs-4 fw-semibold">0</span> Registered Corporates
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded bg-dark border border-secondary">
+                                <small class="text-secondary d-block">Business Exchanged (Converted):</small>
+                                <span id="repBusinessValue" class="fs-4 fw-semibold text-warning">₹0</span> Value Sum
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- VIEW: ADMIN CONSOLE PANEL -->
+            <!-- ==================================================== -->
+            <div id="pane-admin" class="tab-pane-custom">
+                <div class="row g-4">
+                    <!-- Categories Management Card -->
+                    <div class="col-lg-5">
+                        <div class="glass-card">
+                            <h5 class="text-white mb-3"><i class="bi bi-tags-fill text-warning"></i> Niche Categories Manager</h5>
+                            <p class="text-secondary small mb-3">Add or remove business categories. Droplist updates dynamically everywhere instantly.</p>
+                            
+                            <form id="adminAddCategoryForm" class="input-group mb-3">
+                                <input type="text" id="adminNewCategoryInput" class="form-control form-control-sm" placeholder="e.g. Chemical Distributor" required>
+                                <button type="submit" class="btn btn-primary btn-sm">+</button>
+                            </form>
+                            
+                            <div style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                                <ul class="list-group list-group-flush border-top border-secondary" id="adminCategoriesList">
+                                    <!-- Dynamic categories list -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Members Management Card -->
+                    <div class="col-lg-7">
+                        <div class="glass-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="text-white mb-0"><i class="bi bi-people-fill text-warning"></i> Registered Members Ledger</h5>
+                                <button class="btn btn-accent btn-sm" data-bs-toggle="modal" data-bs-target="#adminAddMemberModal">
+                                    <i class="bi bi-person-plus-fill"></i> Add Member
+                                </button>
+                            </div>
+                            <p class="text-secondary small mb-3">Manage and moderate active business hub members. Click delete to remove profiles.</p>
+                            
+                            <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                                <table class="table table-custom align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Member Name</th>
+                                            <th>Niche</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminMembersTableBody">
+                                        <!-- Dynamic members rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- VIEW: SETTINGS ENGINE PANEL -->
+            <!-- ==================================================== -->
+            <div id="pane-settings" class="tab-pane-custom">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="glass-card mb-4" id="firebaseStatusIndicator">
+                            <!-- status loaded dynamically -->
+                        </div>
+                        
+                        <!-- Google Sheets Sync Configuration -->
+                        <div class="glass-card mb-4">
+                            <h5 class="text-white mb-3"><i class="bi bi-file-earmark-spreadsheet text-warning"></i> Google Sheets Cloud Sync</h5>
+                            <p class="text-secondary small mb-3">You can use a free Google Sheet as your cloud database. Once configured, all members can read and write to the same shared sheet in real-time!</p>
+                            
+                            <form id="firebaseSettingsForm">
+                                <div class="mb-3">
+                                    <label class="form-label text-secondary small">Google Apps Script Web App URL</label>
+                                    <input type="url" id="setGoogleSheetsUrl" class="form-control" placeholder="https://script.google.com/macros/s/.../exec" required>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="setGoogleSheetsEnabled">
+                                    <label class="form-check-label text-white small" for="setGoogleSheetsEnabled">Enable Google Sheets Sync</label>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm px-3">
+                                        <i class="bi bi-cloud-arrow-up"></i> Save Sync Engine
+                                    </button>
+                                    <button type="button" id="btnResetToMock" class="btn btn-outline-custom btn-sm">
+                                        Reset to Local Mode
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- JSON Backup & Database Sharing -->
+                        <div class="glass-card">
+                            <h5 class="text-white mb-3"><i class="bi bi-folder-symlink text-warning"></i> JSON Backup & Data Sharing</h5>
+                            <p class="text-secondary small mb-4">Save the entire database state as a file on your computer, or load a database backup file shared by other members. This allows sharing business logs completely offline!</p>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small d-block">Export Database</label>
+                                    <button id="btnBackupExportJson" class="btn btn-accent w-100 btn-sm py-2">
+                                        <i class="bi bi-download"></i> Export Database to JSON
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small d-block">Import Database</label>
+                                    <input type="file" id="inputBackupImportJson" class="form-control form-control-sm" accept=".json">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- MODAL LAYERS -->
+    <!-- ==================================================== -->
+
+    <!-- Modal 1: Post Business Requirement -->
+    <div class="modal fade" id="createRequirementModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="createRequirementForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="bi bi-clipboard-plus text-warning me-2"></i> Post Business Requirement</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Requirement Title</label>
+                        <input type="text" id="reqTitle" class="form-control" placeholder="e.g. Need 50 custom paper bags" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Detailed Specification</label>
+                        <textarea id="reqDesc" class="form-control" rows="3" placeholder="Specify size, dimensions, material quality constraints..." required></textarea>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Category Niche</label>
+                            <select id="reqCategory" class="form-select" required>
+                                 <option value="" disabled selected>Loading categories...</option>
+                             </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Quantity</label>
+                            <input type="number" id="reqQty" class="form-control" value="1" min="1" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Max Budget (₹)</label>
+                            <input type="number" id="reqBudget" class="form-control" placeholder="50000" min="100" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Deadline Date</label>
+                            <input type="date" id="reqDeadline" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-accent">Publish Board</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Submit Bid / Quote -->
+    <div class="modal fade" id="submitQuoteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="submitQuoteForm" class="modal-content">
+                <input type="hidden" id="quoteReqId">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="bi bi-tag text-warning me-2"></i> Submit Business Quotation</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-3 bg-dark border border-secondary rounded mb-3">
+                        <small class="text-secondary d-block">Bidding for Requirement:</small>
+                        <h6 id="quoteReqTitle" class="text-white mb-1">Requirement Title</h6>
+                        <small class="text-secondary">Posted By: <strong id="quoteReqCompany" class="text-warning">Company</strong></small>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">My Quoted Price (₹)</label>
+                            <input type="number" id="quotePrice" class="form-control" placeholder="Price (INR)" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Delivery (Days)</label>
+                            <input type="number" id="quoteDelivery" class="form-control" placeholder="Estimate Days" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Quotation Notes / Terms</label>
+                            <textarea id="quoteNotes" class="form-control" rows="3" placeholder="Provide warranty parameters, logistics terms, support guarantees..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-accent">Submit Bid</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: View & Compare Quotes -->
+    <div class="modal fade" id="compareQuotesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="bi bi-card-list text-warning me-2"></i> Compare Vendor Quotations</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="text-secondary mb-3">Quotations for: <span id="compareReqTitle" class="text-white">Requirement</span></h6>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Vendor Company</th>
+                                    <th>Quoted Price</th>
+                                    <th>Delivery Days</th>
+                                    <th>Notes</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="compareQuotesTableBody">
+                                <!-- dynamic list comparison -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Send Referral -->
+    <div class="modal fade" id="createReferralModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="createReferralForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="bi bi-send text-warning me-2"></i> Log Business Referral</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Select Member Recipient</label>
+                        <select id="refRecipient" class="form-select" required>
+                            <!-- dynamic list -->
+                        </select>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Client Lead Name</label>
+                            <input type="text" id="refClientName" class="form-control" placeholder="e.g. Mr. Rajesh Nair" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Client Contact</label>
+                            <input type="tel" id="refClientContact" class="form-control" placeholder="+919898989898" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Referral Details / Lead Context</label>
+                            <textarea id="refDesc" class="form-control" rows="3" placeholder="Provide information on budget, timeline, contact preferences..." required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-accent">Log Referral</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 5: Admin Add Member -->
+    <div class="modal fade" id="adminAddMemberModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="adminAddMemberForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="bi bi-person-plus text-warning me-2"></i> Register New Member</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Full Name</label>
+                            <input type="text" id="adminMemName" class="form-control" placeholder="Rtn. John Doe" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Mobile Number</label>
+                            <input type="tel" id="adminMemMobile" class="form-control" placeholder="+919876543210" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Business Category</label>
+                            <select class="form-select" id="adminMemCategory" required>
+                                <option value="" disabled selected>Select Category</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Company Name</label>
+                            <input type="text" id="adminMemCompany" class="form-control" placeholder="Acme Technologies" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Email Address</label>
+                            <input type="email" id="adminMemEmail" class="form-control" placeholder="email@company.com" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Password</label>
+                            <input type="password" id="adminMemPassword" class="form-control" placeholder="default: password123">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">System Role</label>
+                            <select class="form-select" id="adminMemRole">
+                                <option value="member" selected>Member (Standard access)</option>
+                                <option value="admin">Admin (System moderator)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-accent">Create Member Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ==================================================== -->
+    <!-- DEPENDENCY LIBRARY LOADS (CDNs) -->
+    <!-- ==================================================== -->
+    
+    <!-- Removed Firebase dependencies -->
+
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- SheetJS for Excel XLSX exports -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <!-- jsPDF + AutoTable for PDF document downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core App Controllers -->
+    <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
