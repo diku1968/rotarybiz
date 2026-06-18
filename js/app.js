@@ -1792,6 +1792,7 @@ async function loadAdminData() {
                     alert("Error creating member: " + err.message);
                 }
             };
+        }
         // 3. Render sponsors ledger
         const sponsors = await window.RotaryBizDB.getSponsors();
         const sponsorTbody = document.getElementById('adminSponsorsTableBody');
