@@ -1,4 +1,4 @@
-// Authentication Module - Wallcity Rotary Biz Hub
+// Authentication Module - Rotary Club Biz Hub
 // Bypasses Firebase Auth: Manages session control locally using the Members database
 
 const SESSION_KEY = 'rotary_active_user';

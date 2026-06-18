@@ -96,6 +96,9 @@ function initLocalStorage() {
             console.error("Failed to migrate categories:", e);
         }
     }
+    if (!localStorage.getItem('rotary_sponsors')) {
+        localStorage.setItem('rotary_sponsors', JSON.stringify([]));
+    }
 }
 initLocalStorage();
 
@@ -138,6 +141,7 @@ window.RotaryBizDB = {
                 if (remoteData.quotes) setLocal('rotary_quotes', remoteData.quotes);
                 if (remoteData.referrals) setLocal('rotary_referrals', remoteData.referrals);
                 if (remoteData.categories) setLocal('rotary_categories', remoteData.categories);
+                if (remoteData.sponsors) setLocal('rotary_sponsors', remoteData.sponsors);
                 console.log("Database successfully synced with Google Sheets!");
             }
         } catch (e) {
@@ -363,6 +367,42 @@ window.RotaryBizDB = {
     },
 
     // ----------------------------------------------------
+    // SPONSOR OPERATIONS
+    // ----------------------------------------------------
+    async getSponsors() {
+        await this.pullFromGoogleSheets();
+        return getLocal('rotary_sponsors');
+    },
+
+    async addSponsor(sponsorData) {
+        const sponsors = getLocal('rotary_sponsors');
+        const id = 'sponsor_' + Date.now();
+        const newSponsor = { id, ...sponsorData, createdAt: new Date().toISOString() };
+        sponsors.push(newSponsor);
+        setLocal('rotary_sponsors', sponsors);
+
+        await callSheetsApi({
+            action: "syncSponsor",
+            sheet: "sponsors",
+            data: newSponsor
+        });
+        return id;
+    },
+
+    async deleteSponsor(id) {
+        let sponsors = getLocal('rotary_sponsors');
+        sponsors = sponsors.filter(s => s.id !== id);
+        setLocal('rotary_sponsors', sponsors);
+
+        await callSheetsApi({
+            action: "deleteSponsor",
+            sheet: "sponsors",
+            data: { id: id }
+        });
+        return true;
+    },
+
+    // ----------------------------------------------------
     // IMAGE UPLOADER (LOCAL BASE64 FILE CONVERTER)
     // ----------------------------------------------------
     async uploadLogo(file, uid) {
@@ -384,7 +424,8 @@ window.RotaryBizDB = {
             requirements: getLocal('rotary_requirements'),
             quotes: getLocal('rotary_quotes'),
             referrals: getLocal('rotary_referrals'),
-            categories: getLocal('rotary_categories')
+            categories: getLocal('rotary_categories'),
+            sponsors: getLocal('rotary_sponsors')
         };
         
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 4));
@@ -403,6 +444,7 @@ window.RotaryBizDB = {
                 setLocal('rotary_quotes', parsed.quotes);
                 setLocal('rotary_referrals', parsed.referrals);
                 if (parsed.categories) setLocal('rotary_categories', parsed.categories);
+                if (parsed.sponsors) setLocal('rotary_sponsors', parsed.sponsors);
                 alert("Database backup imported successfully! The portal will now reload.");
                 window.location.reload();
                 return true;

@@ -25,7 +25,44 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAuthListeners();
     setupMobileSidebar();
     populateCategoryDropdowns();
+    setupSponsorFormListeners();
 });
+
+function setupSponsorFormListeners() {
+    const modalEl = document.getElementById('adminAddSponsorModal');
+    if (modalEl) {
+        modalEl.addEventListener('show.bs.modal', () => {
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('adminSponsorStartDate').value = todayStr;
+            document.getElementById('adminSponsorEndDate').value = "";
+            document.getElementById('adminSponsorDurationPreset').value = "";
+        });
+    }
+
+    const presetSelect = document.getElementById('adminSponsorDurationPreset');
+    if (presetSelect) {
+        presetSelect.addEventListener('change', () => {
+            const startInput = document.getElementById('adminSponsorStartDate');
+            const endInput = document.getElementById('adminSponsorEndDate');
+            if (!startInput.value) {
+                startInput.value = new Date().toISOString().split('T')[0];
+            }
+            const startDate = new Date(startInput.value);
+            if (isNaN(startDate.getTime())) return;
+
+            const val = presetSelect.value;
+            let endDate = new Date(startDate);
+            if (val === '1m') {
+                endDate.setMonth(endDate.getMonth() + 1);
+            } else if (val === '3m') {
+                endDate.setMonth(endDate.getMonth() + 3);
+            } else if (val === '1y') {
+                endDate.setFullYear(endDate.getFullYear() + 1);
+            }
+            endInput.value = endDate.toISOString().split('T')[0];
+        });
+    }
+}
 
 // ----------------------------------------------------
 // ROUTING ENGINE (SPA Hash Router)
@@ -445,8 +482,47 @@ async function loadDashboardData() {
 
         // Render Analytics Charts
         renderDashboardCharts(members, refs);
+
+        // Load Club Sponsors
+        await loadDashboardSponsors();
     } catch (e) {
         console.error("Error drawing dashboard data", e);
+    }
+}
+
+async function loadDashboardSponsors() {
+    try {
+        const sponsors = await window.RotaryBizDB.getSponsors();
+        const container = document.getElementById('dashboardSponsorsList');
+        if (!container) return;
+
+        const today = new Date().toISOString().split('T')[0];
+        const activeSponsors = sponsors.filter(s => {
+            const start = s.startDate || "";
+            const end = s.endDate || "";
+            return (!start || today >= start) && (!end || today <= end);
+        });
+
+        if (activeSponsors.length === 0) {
+            container.innerHTML = `<div class="col-12 text-center py-4 text-muted small"><i class="bi bi-info-circle"></i> No active sponsors. Contact the admin to advertise here.</div>`;
+            return;
+        }
+
+        container.innerHTML = activeSponsors.map(s => `
+            <div class="col">
+                <a href="${s.link}" target="_blank" class="text-decoration-none">
+                    <div class="glass-card text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center border border-secondary hover-scale" style="transition: transform 0.2s;">
+                        <div style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background-color: rgba(255,255,255,0.05); padding: 5px; margin-bottom: 10px;">
+                            <img src="${s.imageUrl}" alt="${s.name}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                        </div>
+                        <h6 class="text-white mb-1 small text-truncate" style="max-width: 100%;">${s.name}</h6>
+                        <p class="text-secondary mb-0 text-truncate" style="font-size: 0.75rem; max-width: 100%;">${s.tagline}</p>
+                    </div>
+                </a>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error("Failed to load dashboard sponsors", e);
     }
 }
 
@@ -1716,6 +1792,87 @@ async function loadAdminData() {
                     alert("Error creating member: " + err.message);
                 }
             };
+        // 3. Render sponsors ledger
+        const sponsors = await window.RotaryBizDB.getSponsors();
+        const sponsorTbody = document.getElementById('adminSponsorsTableBody');
+        if (sponsorTbody) {
+            const today = new Date().toISOString().split('T')[0];
+            sponsorTbody.innerHTML = sponsors.map(s => {
+                let statusBadge = "";
+                if (s.startDate && s.endDate) {
+                    if (today < s.startDate) {
+                        statusBadge = `<span class="badge bg-warning text-dark ms-1">Scheduled</span>`;
+                    } else if (today > s.endDate) {
+                        statusBadge = `<span class="badge bg-danger ms-1">Expired</span>`;
+                    } else {
+                        statusBadge = `<span class="badge bg-success ms-1">Active</span>`;
+                    }
+                } else {
+                    statusBadge = `<span class="badge bg-success ms-1">Active</span>`;
+                }
+
+                const datesText = (s.startDate && s.endDate) ? 
+                    `<div class="text-muted mt-1" style="font-size:0.7rem;"><i class="bi bi-calendar3"></i> ${s.startDate} to ${s.endDate}</div>` : 
+                    `<div class="text-muted mt-1" style="font-size:0.7rem;"><i class="bi bi-calendar-check"></i> Always Active</div>`;
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width: 40px; height: 40px; border-radius: 4px; overflow: hidden; background-color: rgba(255,255,255,0.05); padding: 2px;">
+                                    <img src="${s.imageUrl}" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <strong class="text-white">${s.name}</strong>
+                                    ${statusBadge}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-white small">${s.tagline}</div>
+                            ${datesText}
+                        </td>
+                        <td><a href="${s.link}" target="_blank" class="text-info small text-truncate d-inline-block" style="max-width: 150px;">${s.link}</a></td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-danger p-1 px-2" onclick="adminDeleteSponsor('${s.id}')"><i class="bi bi-trash"></i> Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Bind Add Sponsor Ad form
+        const sponsorForm = document.getElementById('adminAddSponsorForm');
+        if (sponsorForm) {
+            sponsorForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('adminSponsorName').value.trim();
+                const tagline = document.getElementById('adminSponsorTagline').value.trim();
+                const link = document.getElementById('adminSponsorLink').value.trim();
+                const startDate = document.getElementById('adminSponsorStartDate').value;
+                const endDate = document.getElementById('adminSponsorEndDate').value;
+                const fileInput = document.getElementById('adminSponsorImage');
+                
+                let imageUrl = "";
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    imageUrl = await window.RotaryBizDB.uploadLogo(file);
+                }
+
+                try {
+                    await window.RotaryBizDB.addSponsor({ name, tagline, link, imageUrl, startDate, endDate });
+                    
+                    const modalEl = document.getElementById('adminAddSponsorModal');
+                    const modalInst = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modalInst.hide();
+                    
+                    sponsorForm.reset();
+                    alert("Sponsor Ad added successfully!");
+                    loadAdminData();
+                } catch (err) {
+                    alert("Error adding sponsor ad: " + err.message);
+                }
+            };
         }
     } catch (e) {
         console.error("Admin data loading failed", e);
@@ -1733,6 +1890,13 @@ window.adminDeleteCategory = async function(cat) {
 window.adminDeleteMember = async function(uid) {
     if (confirm("Are you sure you want to delete this member profile? This action is permanent and cannot be undone.")) {
         await window.RotaryBizDB.deleteMember(uid);
+        loadAdminData();
+    }
+};
+
+window.adminDeleteSponsor = async function(id) {
+    if (confirm("Are you sure you want to delete this sponsor ad? This action is permanent and cannot be undone.")) {
+        await window.RotaryBizDB.deleteSponsor(id);
         loadAdminData();
     }
 };
