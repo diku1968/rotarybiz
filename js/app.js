@@ -1,4 +1,4 @@
-// Core Application Controller - Wallcity Rotary Biz Hub
+// Core Application Controller - Rotary Club Biz Hub
 // Manages Views Routing, Forms, Interactive Charts, Exporting & UI state
 
 let currentUser = null;
@@ -206,7 +206,7 @@ function renderLoginView() {
     authWrapper.innerHTML = `
         <div class="auth-card glow-animation">
             <div class="text-center mb-4">
-                <img src="logo.png" alt="Wallcity Rotary Biz Hub Logo" class="img-fluid mb-3" style="max-height: 120px; filter: drop-shadow(0 0 10px rgba(255, 184, 28, 0.25));">
+                <img src="logo.png" alt="Rotary Club Biz Hub Logo" class="img-fluid mb-3" style="max-height: 120px; filter: drop-shadow(0 0 10px rgba(255, 184, 28, 0.25));">
                 <div class="developer-credit-text mb-2">Developed by PHF Dhiren Pathak</div>
                 <p class="text-secondary small">CRM & Business Networking Portal</p>
             </div>
@@ -349,7 +349,7 @@ function renderRegisterView() {
     authWrapper.innerHTML = `
         <div class="auth-card glow-animation" style="max-width: 580px;">
             <div class="text-center mb-4">
-                <img src="logo.png" alt="Wallcity Rotary Biz Hub Logo" class="img-fluid mb-2" style="max-height: 80px; filter: drop-shadow(0 0 10px rgba(255, 184, 28, 0.25));">
+                <img src="logo.png" alt="Rotary Club Biz Hub Logo" class="img-fluid mb-2" style="max-height: 80px; filter: drop-shadow(0 0 10px rgba(255, 184, 28, 0.25));">
                 <h3 class="mb-1 text-white">Member Registration</h3>
                 <div class="developer-credit-text mb-3">Developed by PHF Dhiren Pathak</div>
             </div>
@@ -1294,7 +1294,7 @@ function exportReferralsPDF(refs) {
         doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(22);
-        doc.text("WALLCITY ROTARY BIZ HUB", 14, 20);
+        doc.text("ROTARY CLUB BIZ HUB", 14, 20);
         doc.setFontSize(12);
         doc.setFont("helvetica", "normal");
         doc.text("Business Referrals Analytics & Log Summary", 14, 30);
