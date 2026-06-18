@@ -505,11 +505,12 @@ async function loadDashboardSponsors() {
 
         if (activeSponsors.length === 0) {
             container.innerHTML = `<div class="col-12 text-center py-4 text-muted small"><i class="bi bi-info-circle"></i> No active sponsors. Contact the admin to advertise here.</div>`;
+            container.style.animation = "none";
             return;
         }
 
-        container.innerHTML = activeSponsors.map(s => `
-            <div class="col">
+        const cardsHtml = activeSponsors.map(s => `
+            <div class="sponsor-marquee-card">
                 <a href="${s.link}" target="_blank" class="text-decoration-none">
                     <div class="glass-card text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center border border-secondary hover-scale" style="transition: transform 0.2s;">
                         <div style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background-color: rgba(255,255,255,0.05); padding: 5px; margin-bottom: 10px;">
@@ -521,6 +522,19 @@ async function loadDashboardSponsors() {
                 </a>
             </div>
         `).join('');
+
+        // If there are more than 3 active sponsors, duplicate cards for a smooth infinite scroll loop
+        if (activeSponsors.length > 3) {
+            container.innerHTML = cardsHtml + cardsHtml;
+            const duration = Math.max(15, activeSponsors.length * 6);
+            container.style.animation = `marquee-scroll ${duration}s linear infinite`;
+            container.classList.remove("justify-content-center", "w-100");
+        } else {
+            container.innerHTML = cardsHtml;
+            container.style.animation = "none";
+            // Align in center when there are few static logos
+            container.classList.add("justify-content-center", "w-100");
+        }
     } catch (e) {
         console.error("Failed to load dashboard sponsors", e);
     }
