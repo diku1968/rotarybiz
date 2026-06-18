@@ -227,11 +227,11 @@ function renderLoginView() {
                     <form id="emailLoginForm">
                         <div class="mb-3">
                             <label class="form-label text-secondary">Email Address</label>
-                            <input type="email" class="form-control" id="loginEmail" placeholder="name@example.com" required value="dhirenpathak1970@gmail.com">
+                            <input type="email" class="form-control" id="loginEmail" placeholder="name@example.com" required>
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-secondary">Password</label>
-                            <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required value="password123">
+                            <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required>
                         </div>
                         <button type="submit" class="btn btn-accent w-100 py-2.5 mb-3">Login to Dashboard</button>
                     </form>
@@ -242,7 +242,7 @@ function renderLoginView() {
                     <form id="phoneLoginForm">
                         <div class="mb-3">
                             <label class="form-label text-secondary">Mobile Number (with Country Code)</label>
-                            <input type="tel" class="form-control" id="loginMobile" placeholder="+91 98765 43210" required value="+919876543210">
+                            <input type="tel" class="form-control" id="loginMobile" placeholder="+91 98765 43210" required>
                         </div>
                         <div id="recaptcha-container"></div>
                         <button type="submit" class="btn btn-primary w-100 py-2.5 mb-3" id="sendOtpBtn">Send Verification OTP</button>
