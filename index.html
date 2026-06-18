@@ -167,12 +167,38 @@
                 </div>
 
                 <!-- Club Sponsors Row -->
+                <style>
+                .sponsor-marquee-container {
+                    overflow: hidden;
+                    width: 100%;
+                    position: relative;
+                    padding: 5px 0;
+                }
+                .sponsor-marquee-inner {
+                    display: flex;
+                    gap: 20px;
+                    width: max-content;
+                }
+                .sponsor-marquee-inner:hover {
+                    animation-play-state: paused !important;
+                }
+                @keyframes marquee-scroll {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .sponsor-marquee-card {
+                    width: 180px;
+                    flex-shrink: 0;
+                }
+                </style>
                 <div class="row g-4 mt-2">
                     <div class="col-12">
                         <div class="glass-card">
                             <h5 class="text-white mb-3"><i class="bi bi-megaphone-fill text-warning"></i> Club Sponsors & Partners</h5>
-                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3" id="dashboardSponsorsList">
-                                <!-- Dynamic sponsors cards will render here -->
+                            <div class="sponsor-marquee-container">
+                                <div class="sponsor-marquee-inner" id="dashboardSponsorsList">
+                                    <!-- Dynamic sponsors cards will render here -->
+                                </div>
                             </div>
                         </div>
                     </div>
