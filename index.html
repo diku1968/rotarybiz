@@ -165,6 +165,18 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Club Sponsors Row -->
+                <div class="row g-4 mt-2">
+                    <div class="col-12">
+                        <div class="glass-card">
+                            <h5 class="text-white mb-3"><i class="bi bi-megaphone-fill text-warning"></i> Club Sponsors & Partners</h5>
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3" id="dashboardSponsorsList">
+                                <!-- Dynamic sponsors cards will render here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- ==================================================== -->
@@ -482,6 +494,37 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Sponsor Ads Management Row -->
+                <div class="row g-4 mt-2">
+                    <div class="col-12">
+                        <div class="glass-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="text-white mb-0"><i class="bi bi-megaphone-fill text-warning"></i> Sponsor Ads Manager</h5>
+                                <button class="btn btn-accent btn-sm" data-bs-toggle="modal" data-bs-target="#adminAddSponsorModal">
+                                    <i class="bi bi-plus-circle-fill"></i> Add Sponsor Ad
+                                </button>
+                            </div>
+                            <p class="text-secondary small mb-3">Manage promotional banner advertisements for club sponsors that display on the main dashboard.</p>
+                            
+                            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                                <table class="table table-custom align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Sponsor / Company Name</th>
+                                            <th>Tagline / Description</th>
+                                            <th>Website Link</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminSponsorsTableBody">
+                                        <!-- Dynamic sponsors rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- ==================================================== -->
@@ -751,6 +794,60 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-accent">Create Member Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal: Admin Add Sponsor -->
+    <div class="modal fade" id="adminAddSponsorModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="adminAddSponsorForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="bi bi-megaphone text-warning me-2"></i> Add Sponsor Ad</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Sponsor / Company Name</label>
+                            <input type="text" id="adminSponsorName" class="form-control" placeholder="e.g. Acme Corporation" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Ad Tagline / Description</label>
+                            <input type="text" id="adminSponsorTagline" class="form-control" placeholder="e.g. Best Printing Solutions in Town" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Website / WhatsApp Link</label>
+                            <input type="url" id="adminSponsorLink" class="form-control" placeholder="https://wa.me/... or https://example.com" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Start Date</label>
+                            <input type="date" id="adminSponsorStartDate" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">End Date</label>
+                            <input type="date" id="adminSponsorEndDate" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Duration Preset</label>
+                            <select id="adminSponsorDurationPreset" class="form-select">
+                                <option value="" selected disabled>-- Select Duration (Auto Calculates End Date) --</option>
+                                <option value="1m">1 Month</option>
+                                <option value="3m">3 Months</option>
+                                <option value="1y">1 Year</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Sponsor Logo / Banner Image (PNG/JPG)</label>
+                            <input type="file" id="adminSponsorImage" class="form-control" accept="image/*" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-custom btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-accent btn-sm">Add Ad</button>
                 </div>
             </form>
         </div>
