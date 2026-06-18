@@ -1,4 +1,4 @@
-// Database Operations Layer - Wallcity Rotary Biz Hub
+// Database Operations Layer - Rotary Club Biz Hub
 // Handles data using LocalStorage, with import/export tools and optional Google Sheets cloud sync
 
 const DEFAULT_CATEGORIES = [
@@ -11,7 +11,7 @@ const DEFAULT_CATEGORIES = [
     "Software Development", "Website Development", "Mobile App Development", "Graphic Design", 
     "Digital Marketing", "SEO Services", "Cyber Security", "Cloud Solutions", "IT Hardware & Networking",
     "Distributor", "Wholesaler", "Importer", "Exporter", "FMCG Trader", "Industrial Supplier",
-    "Doctor", "Hospital", "Clinic", "Dentist", "Physiotherapist", "Diagnostic Lab", "Medical Equipment Supplier", "Pharmacy",
+    "Physician (MD / General Medicine)", "Pediatrician (Child Specialist)", "Cardiologist (Heart Specialist)", "Dermatologist (Skin Specialist)", "Orthopedic (Bone Specialist)", "Gynecologist (Women's Health)", "Ophthalmologist (Eye Specialist)", "ENT Specialist", "Hospital", "Clinic", "Dentist", "Physiotherapist", "Diagnostic Lab", "Medical Equipment Supplier", "Pharmacy",
     "School", "College", "Coaching Institute", "Skill Development", "Corporate Trainer", "Educational Consultant",
     "Hotel", "Resort", "Travel Agency", "Tour Operator", "Event Planner", "Catering Service",
     "Transport Company", "Logistics Provider", "Courier Service", "Warehouse Services", "Fleet Operator",
@@ -73,6 +73,28 @@ function initLocalStorage() {
     }
     if (!localStorage.getItem('rotary_categories')) {
         localStorage.setItem('rotary_categories', JSON.stringify(DEFAULT_CATEGORIES));
+    } else {
+        // Migrate old generic "Doctor" category to specific specialties for existing users
+        try {
+            let cats = JSON.parse(localStorage.getItem('rotary_categories'));
+            const docIdx = cats.indexOf("Doctor");
+            if (docIdx !== -1) {
+                cats.splice(docIdx, 1, 
+                    "Physician (MD / General Medicine)", 
+                    "Pediatrician (Child Specialist)", 
+                    "Cardiologist (Heart Specialist)", 
+                    "Dermatologist (Skin Specialist)", 
+                    "Orthopedic (Bone Specialist)", 
+                    "Gynecologist (Women's Health)", 
+                    "Ophthalmologist (Eye Specialist)", 
+                    "ENT Specialist"
+                );
+                cats.sort();
+                localStorage.setItem('rotary_categories', JSON.stringify(cats));
+            }
+        } catch (e) {
+            console.error("Failed to migrate categories:", e);
+        }
     }
 }
 initLocalStorage();
@@ -368,7 +390,7 @@ window.RotaryBizDB = {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 4));
         const dlAnchorElem = document.createElement('a');
         dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", `Wallcity_RotaryBiz_Backup_${new Date().toISOString().split('T')[0]}.json`);
+        dlAnchorElem.setAttribute("download", `RotaryClub_BizHub_Backup_${new Date().toISOString().split('T')[0]}.json`);
         dlAnchorElem.click();
     },
 
